@@ -1,0 +1,150 @@
+type
+  TPlayer = record(TBase)
+    Name, Pass, Pin: String;
+    Active: Boolean;
+  end;
+
+const
+  SKILL_COUNT         = 28;
+  SKILL_ATTACK        = 0;
+  SKILL_DEFENCE       = 1;
+  SKILL_STRENGTH      = 2;
+  SKILL_HITPOINTS     = 3;    SKILL_HP = SKILL_HITPOINTS;
+  SKILL_RANGE         = 4;
+  SKILL_PRAYER        = 5;
+  SKILL_MAGIC         = 6;
+  SKILL_COOKING       = 7;
+  SKILL_WOODCUTTING   = 8;
+  SKILL_FLETCHING     = 9;
+  SKILL_FISHING       = 10;
+  SKILL_FIREMAKING    = 11;
+  SKILL_CRAFTING      = 12;
+  SKILL_SMITHING      = 13;
+  SKILL_MINING        = 14;
+  SKILL_HERBLORE      = 15;
+  SKILL_AGILITY       = 16;
+  SKILL_THIEVING      = 17;
+  SKILL_SLAYER        = 18;
+  SKILL_FARMING       = 19;
+  SKILL_RUNECRAFTING  = 20;
+  SKILL_HUNTER        = 21;
+  SKILL_CONSTRUCTION  = 22;
+
+procedure TPlayer.__destroy;
+begin
+  if (Self.__Object <> 0) then
+    SmartFreeObject(SmartCurrentTarget, Self.__Object);
+end;
+
+procedure TPlayer.__update;
+begin
+  if (Self.__Object <> 0) then
+    SmartFreeObject(SmartCurrentTarget, Self.__Object);
+
+  Self.__Object := SmartGetFieldObject(SmartCurrentTarget, 0, client_player);
+end;
+
+function TPlayer.animation: Integer;
+begin
+  Self.__update;
+  Result := SmartGetFieldInt(SmartCurrentTarget, Self.__Object, Actor_animation)  * Actor_animation_Multiplier;
+end;
+
+function TPlayer.isAnimating: Boolean;
+begin
+  Result := (Self.Animation > -1);
+end;
+
+function TPlayer.waitAnimating(Time: Integer): Boolean;
+var
+  Timer: Integer;
+begin
+  MarkTime(Timer);
+  while ((Self.animation = -1) and (TimeFromMark(Timer) < Time)) do
+    Sleep(100);
+  Result := (not (Self.animation = -1));
+end;
+
+function TPlayer.skillLevel(Skill: Integer): Integer;
+begin
+  Result := SmartGetFieldArrayInt(SmartCurrentTarget, 0, client_levels, Skill);
+end;
+
+function TPlayer.maxSkillLevel(Skill: Integer): Integer;
+begin
+  Result := SmartGetFieldArrayInt(SmartCurrentTarget, 0, client_real_levels, Skill);
+end;
+
+function TPlayer.experience(Skill: Integer): Integer;
+begin
+  Result := SmartGetFieldArrayInt(SmartCurrentTarget, 0, client_experiences, Skill);
+end;
+
+function TPlayer.health: Integer;
+begin
+  Self.skillLevel(SKILL_HITPOINTS);
+end;
+
+function TPlayer.maxHealth: Integer;
+begin
+  Self.__update;
+  Result := SmartGetFieldInt(SmartCurrentTarget, Self.__Object, Actor_maxHealth) * Actor_maxHealth_Multiplier;
+end;
+
+function TPlayer.healthPercent: Extended;
+begin
+  if (Self.health = 0) then
+    Exit(0.0);
+
+  Result := (Self.health / Self.maxHealth) * 100.0;
+end;
+
+function TPlayer.runEnergy: Integer;
+begin
+  Result := SmartGetFieldInt(SmartCurrentTarget, 0, client_run_energy) * client_run_energy_Multiplier;
+end;
+
+function TPlayer.isAutoRetaliateOn: Boolean;
+begin
+  Result := (RSClient.getSetting(172) = 0);
+end;
+
+function TPlayer.isRunOn: Boolean;
+begin
+  Result := (RSClient.getSetting(173) = 1);
+end;
+
+function TPlayer.isPoisoned: Boolean;
+begin
+  Result := (RSClient.getSetting(102) > 0);
+end;
+
+function TPlayer.isAutoCastOn: Boolean;
+begin
+  Result := (RSClient.getSetting(108) > 0);
+end;
+
+function TPlayer.specialAttackPercent: Extended;
+begin
+  Result := (RSClient.getSetting(300) / 10.0);
+end;
+
+function TPlayer.weight: Integer;
+begin
+  Result := SmartGetFieldInt(SmartCurrentTarget, 0, client_weight) * client_weight_Multiplier;
+end;
+
+function TPlayer.loginState: Integer;
+begin
+  Result := SmartGetFieldInt(SmartCurrentTarget, 0, client_login_state) * client_login_state_Multiplier;
+end;
+
+function TPlayer.plane: Integer;
+begin
+  Result := SmartGetFieldInt(SmartCurrentTarget, 0, client_plane) * client_plane_Multiplier;
+end;
+
+function TPlayer.inFight: Boolean;
+begin
+  Writeln('Warning: TPlayer.inFight has not been implemented yet.');
+end;
