@@ -49,6 +49,11 @@ begin
   result.Y := (smartGetFieldInt(smartCurrentTarget, 0, client_baseY) * client_baseY_Multiplier) + (smartGetFieldInt(smartCurrentTarget, Self.__Object, Actor_localY) * Actor_localY_Multiplier) div 128;
 end;
 
+function TPlayer.onTile(tile: TPoint): Boolean;
+begin
+  result := self.getTile().equals(tile);
+end;
+
 function TPlayer.getDistance(P: TPoint): Integer; override;
 begin
   result := self.getTile().getDistance(P);
