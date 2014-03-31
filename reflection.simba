@@ -6,22 +6,21 @@ var
   SmartCurrentTarget: Integer;
   SmartCurrentPID: Integer;
 
-{$I Reflection/Misc/SmartParams.simba}
-
-{$I Reflection/Core/Hooks.simba}
-{$I Reflection/Core/Globals.simba}
-{$I Reflection/Core/Client.simba}
-{$I Reflection/Core/GroundItem.simba}
-{$I Reflection/Core/Player.simba}
-{$I Reflection/Core/Model.simba}
-{$I Reflection/Core/Region.simba}
+{$I reflection/core/smart.simba}
+{$I reflection/core/hooks.simba}
+{$I reflection/core/globals.simba}
+{$I reflection/core/client.simba}
+{$I reflection/core/grounditem.simba}
+{$I reflection/core/player.simba}
+{$I reflection/core/model.simba}
+{$I reflection/core/region.simba}
 
 const
   revision = 1;
 
-procedure setupReflection;
 var
   T: Integer;
+
 begin
   T := getTimeRunning;
 
