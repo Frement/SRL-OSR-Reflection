@@ -1,5 +1,8 @@
 {$DEFINE REFLECTION}
 
+const
+  revision = 1;
+
 var
   smartForceNew: Boolean;
   smartWorld: Integer;
@@ -13,10 +16,11 @@ var
 {$I reflection/core/grounditem.simba}
 {$I reflection/core/player.simba}
 {$I reflection/core/model.simba}
-{$I reflection/core/region.simba}
 
-const
-  revision = 1;
+var
+  Player: TPlayer;
+
+{$I reflection/core/region.simba}
 
 var
   T: Integer;
