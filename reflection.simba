@@ -25,7 +25,7 @@ var
 var
   T: Integer;
 
-procedure setupCurves;
+procedure __setupCurves;
 var
   I: Integer;
 begin
@@ -37,10 +37,16 @@ begin
   end;
 end;
 
+procedure __destroy;
+begin
+  player.__destroy;
+end;
+
 begin
   T := getTimeRunning;
 
-  setupCurves;
+  __setupCurves;
+  addOnTerminate('__destroy');
 
   writeln('Reflection compiled in ' +  toStr(getTimeRunning - T) + ' msec');
 
