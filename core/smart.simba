@@ -27,12 +27,12 @@ Example:
 .. code-block:: pascal
 
 *)
-function getWorld(): string;
+function getWorld(): String;
 begin
-  if (smart_World = 0) then
+  if (smartWorld = 0) then
   begin
     writeln('Grabbing your best world...');
-    result := Between('a href="http://oldschool', '.runescape.com/j1', GetPage('http://oldschool.runescape.com/slu'));
+    result := between('a href="http://oldschool', '.runescape.com/j1', getPage('http://oldschool.runescape.com/slu'));
 
     // check if the result is a vaild world
     if (length(result) > 0) then
@@ -43,8 +43,10 @@ begin
       end;
     // else something failed, let's pick a random world
     result := intToStr(randomRange(1, 78));
-  end else begin
-    result := IntToStr(smart_World);
+  end
+  else
+  begin
+    result := intToStr(smartWorld);
     writeln('Using user selected world "' + result + '"');
   end;
 end;
@@ -78,14 +80,14 @@ begin
 
   if (count > 0) then
     for i := 0 to (count - 1) do
-      result[i] := SmartGetAvailablePID(i);
+      result[i] := smartGetAvailablePID(i);
 end;
 
 function smartPairToExistingClient(): boolean;
 var
   pidArr: TIntegerArray;
-  i, t, p: integer;
-  b: boolean;
+  I, T, P: integer;
+  B: boolean;
 begin
   result := false;
 
@@ -99,28 +101,27 @@ begin
 
   writeln('Found ' + intToStr(length(pidArr)) + ' free client(s), attempting to pair to one...');
 
-  for i := 0 to high(pidArr) do
+  for I := 0 to high(pidArr) do
   begin
-    t := 0;
-    t := SmartPairClient(pidArr[i]);
+    T := smartPairClient(pidArr[i]);
 
-    if (t <> 0) then
+    if (T <> 0) then
     begin
-       p := pidArr[i];
+       P := pidArr[I];
 
        try
-         setEIOSTarget('libsmartremote', intToStr(p));
-         writeln('Set SMART['+ intToStr(p) +'] as Simba''s target');
-         b := true;
+         setEIOSTarget('libsmartremote', intToStr(P));
+         writeln('Set SMART['+ intToStr(P) +'] as Simba''s target');
+         B := true;
        except
-         writeln('Failed to set SMART['+ intToStr(p) +'] as Simba''s target');
-         b := false;
+         writeln('Failed to set SMART['+ intToStr(P) +'] as Simba''s target');
+         B := false;
        end;
 
-       if (b) then
+       if (B) then
        begin
-         smartCurrentPID := p;
-         smartCurrentTarget := t;
+         smartCurrentPID := P;
+         smartCurrentTarget := T;
 
          if (not smartEnabled(smartCurrentTarget)) then
            smartSetEnabled(smartCurrentTarget, true);
@@ -131,9 +132,11 @@ begin
          result := true;
          exit;
        end;
-    end else begin
-      writeln('Failed to pair to SMART['+ intToStr(pidArr[i]) +']');
-      smartFreeClient(t);
+    end
+    else
+    begin
+      writeln('Failed to pair to SMART['+ intToStr(pidArr[I]) +']');
+      smartFreeClient(T);
     end;
   end;
 end;
@@ -158,7 +161,7 @@ begin
   params[1] := 'j1';
 
   smartCurrentTarget := 0;
-  smartCurrentTarget := SmartSpawnClient('java.exe', replace(PluginPath, '\', '/', [rfReplaceAll]), params[0], params[1], 765, 503, '', '', '', '');
+  smartCurrentTarget := smartSpawnClient('java.exe', replace(pluginPath, '\', '/', [rfReplaceAll]), params[0], params[1], 765, 503, '', '', '', '');
 
   if (smartCurrentTarget <> 0) then
   begin
@@ -174,7 +177,9 @@ begin
     end;
 
     addOnTerminate('smartFreeCurrentClient');
-  end else begin
+  end
+  else
+  begin
     writeln('Fatal Error: Unable to spawn a SMART client');
     writeln('HINT: Make sure you have the lastest java version, and try running simba as admin');
     terminateScript();
