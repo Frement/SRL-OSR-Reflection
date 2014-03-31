@@ -38,11 +38,9 @@ end;
 
 procedure TPlayer.__update;
 begin
-  if (Self.__Object <> 0) then
-    SmartFreeObject(SmartCurrentTarget, Self.__Object);
-
+  Self.__destroy;
   Self.__Object := SmartGetFieldObject(SmartCurrentTarget, 0, client_player);
-end;
+end; 
 
 function TPlayer.animation: Integer;
 begin
