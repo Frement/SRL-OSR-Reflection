@@ -1,0 +1,40 @@
+type
+  TGroundItem = record(TBase)
+    id, quantity: Integer;
+  end;
+
+  TGroundItemArray = array of TGroundItem;
+
+
+procedure TGroundItem.create(id, quantity: Integer; tile: TPoint);
+begin
+  self.id := id;
+  self.quantity := quantity;
+  self.tile := tile;
+end;
+
+function TGroundItem.getGroundItemsAt(Tile: TPoint): TGroundItemArray;
+var
+   baseX, baseY, plane, _head, _next, _node, _nodes, _id, _quantity: Integer;
+begin
+  baseX := smartGetFieldInt(smartCurrentTarget, 0, client_baseX) * client_baseX_Multiplier;
+  baseY := smartGetFieldInt(smartCurrentTarget, 0, client_baseY) * client_baseY_Multiplier;
+  plane := smartGetFieldInt(smartCurrentTarget, 0, client_plane) * client_plane_Multiplier;
+  _nodes := smartGetFieldArray3DObject(smartCurrentTarget, 0, client_groundItems, plane, tile.X - baseX, tile.Y - baseY);
+  _head := smartGetFieldObject(smartCurrentTarget, _nodes, LinkedList_head);
+  _next := smartGetFieldObject(smartCurrentTarget, _head, Node_next);
+  while (_next <> -1) and (_next <> 0) and (_next <> _head) do
+  begin
+    _id := smartGetFieldInt(smartCurrentTarget, _next, Item_id);
+    _quantity := smartGetFieldInt(smartCurrentTarget, _next, Item_stackSize);
+    if (_id = -1) or (_quantity = -1) then
+      break;
+    setLength(result, length(result) + 1);
+    result[High(Result)].create(_id * Item_id_Multiplier, _quantity * Item_stackSize_Multiplier, tile);
+    _next := SmartGetFieldObject(smartCurrentTarget, _next, Node_next);
+    smartFreeObject(smartCurrentTarget, _node);
+  end;
+  smartFreeObject(smartCurrentTarget, _head);
+  smartFreeObject(smartCurrentTarget, _next);
+  smartFreeObject(smartCurrentTarget, _nodes);
+end;
