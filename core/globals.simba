@@ -4,50 +4,62 @@ type
   end;
 
   TBase = record
-    __Object: Integer;
-    Tile: TPoint;
+    __object: Integer;
+    tile: TPoint;
   end;
 
-function TBase.inBox(B: TBox): Boolean;
+var
+  CURVESIN, CURVECOS: TIntegerArray;
+
+function TPoint.inBox(B: TBox): Boolean;
 begin
-  Result := PointInBox(Self.Tile, B);
+  result := pointInBox(self, B);
+end;
+
+function TPoint.getDistance(P: TPoint): Integer;
+begin
+  if (self.X < 128) or (self.Y < 128) or (self.X > 13056) or (self.Y > 13056) then
+    exit(0);
+
+  result := distance(self.X, self.Y, P.Y, P.Y);
 end;
 
 function Point3D(X, Y, Z: Integer): TPoint3D;
 begin
-  Result.X := X;
-  Result.Y := Y;
-  Result.Z := Z;
+  result.X := X;
+  result.Y := Y;
+  result.Z := Z;
 end;
 
 function String.removeFormatting: String;
 var
   I: Integer;
-  Skip: Boolean;
+  skip: Boolean;
 begin
-  for I := 1 to Length(Self) do begin
-    if (Self[I] = '<') then
-      Skip := True;
+  for I := 1 to length(self) do begin
+    if (self[I] = '<') then
+      skip := True;
 
-    if (Skip) and (Self[I] = '>') then begin
-      Skip := False;
-      Continue;
+    if (skip) and (self[I] = '>') then
+    begin
+      skip := False;
+      continue;
     end;
 
-    if (Skip) then
-      Continue;
+    if (skip) then
+      continue;
 
-    Result := Result + Self[I];
+    result := result + self[I];
   end;
-  Result := Replace(Result, '  ', ' ', [rfReplaceAll]);
+  result := replace(result, '  ', ' ', [rfReplaceAll]);
 end;
 
-procedure MarkTime(var Timer: Integer);
+procedure MarkTime(var timer: Integer);
 begin
-  Timer := GetSystemTime;
+  timer := getSystemTime;
 end;
 
-function TimeFromMark(Timer: Integer): Integer;
+function TimeFromMark(timer: Integer): Integer;
 begin
-  Result := (GetSystemTime - Timer);
+  result := (getSystemTime - timer);
 end;
