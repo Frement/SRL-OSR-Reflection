@@ -42,7 +42,7 @@ begin
   self.__object := smartGetFieldObject(smartCurrentTarget, 0, client_player);
 end;
 
-function TPlayer.getTile: TPoint;
+function TPlayer.getTile: TPoint; override;
 begin
   self.__update;
   result.X := (smartGetFieldInt(smartCurrentTarget, 0, client_baseX) * client_baseX_Multiplier) + (smartGetFieldInt(smartCurrentTarget, Self.__Object, Actor_localX) * Actor_localX_Multiplier) div 128;
