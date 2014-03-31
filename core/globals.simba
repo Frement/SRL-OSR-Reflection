@@ -1,0 +1,53 @@
+type
+  TPoint3D = record
+    X, Y, Z: Integer;
+  end;
+
+  TBase = record
+    __Object: Integer;
+    Tile: TPoint;
+  end;
+
+function TBase.inBox(B: TBox): Boolean;
+begin
+  Result := PointInBox(Self.Tile, B);
+end;
+
+function Point3D(X, Y, Z: Integer): TPoint3D;
+begin
+  Result.X := X;
+  Result.Y := Y;
+  Result.Z := Z;
+end;
+
+function String.removeFormatting: String;
+var
+  I: Integer;
+  Skip: Boolean;
+begin
+  for I := 1 to Length(Self) do begin
+    if (Self[I] = '<') then
+      Skip := True;
+
+    if (Skip) and (Self[I] = '>') then begin
+      Skip := False;
+      Continue;
+    end;
+
+    if (Skip) then
+      Continue;
+
+    Result := Result + Self[I];
+  end;
+  Result := Replace(Result, '  ', ' ', [rfReplaceAll]);
+end;
+
+procedure MarkTime(var Timer: Integer);
+begin
+  Timer := GetSystemTime;
+end;
+
+function TimeFromMark(Timer: Integer): Integer;
+begin
+  Result := (GetSystemTime - Timer);
+end;
