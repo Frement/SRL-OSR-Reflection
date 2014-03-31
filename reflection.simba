@@ -18,7 +18,7 @@ var
 {$I reflection/core/model.simba}
 
 var
-  Player: TPlayer;
+  player: TPlayer;
 
 {$I reflection/core/region.simba}
 
