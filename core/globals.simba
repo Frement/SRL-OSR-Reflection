@@ -24,6 +24,11 @@ begin
   result := distance(self.X, self.Y, P.Y, P.Y);
 end;
 
+function TBase.getTile: TPoint;
+begin
+  result := self.tile;
+end;
+
 function TBase.getDistance(P: TPoint): Integer;
 begin
   self.tile.getDistance(P);
