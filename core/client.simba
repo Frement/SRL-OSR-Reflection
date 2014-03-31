@@ -1,6 +1,10 @@
 type
   TRSClient = type Pointer;
 
+  TPoint3D = record
+    X, Y, Z: Integer;
+  end;
+
 var
   RSClient: TRSClient;
 
@@ -48,16 +52,4 @@ begin
   result.X := smartGetFieldInt(smartCurrentTarget, 0, client_cameraX) * client_cameraX_Multiplier;
   result.Y := smartGetFieldInt(smartCurrentTarget, 0, client_cameraY) * client_cameraY_Multiplier;
   result.Z := smartGetFieldInt(smartCurrentTarget, 0, client_cameraZ) * client_cameraZ_Multiplier;
-end;
-
-procedure TRSClient.setupCurves;
-var
-  I: Integer;
-begin
-  setLength(CURVESIN, 2048);
-  setLength(CURVECOS, 2048);
-  for I := 0 to 2047 do begin
-    CURVESIN[I] := round(65536.0 * sin(I * 0.0030679614999999999));
-    CURVECOS[I] := round(65536.0 * cos(I * 0.0030679614999999999));
-  end;
 end;
