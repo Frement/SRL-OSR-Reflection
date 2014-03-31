@@ -1,15 +1,20 @@
 type
-  TPoint3D = record
-    X, Y, Z: Integer;
-  end;
-
   TBase = record
     __object: Integer;
     __tile: TPoint;
   end;
 
+const
+  REGION_WIDTH = 104;
+  REGION_HEIGHT = REGION_WIDTH;
+
 var
   CURVESIN, CURVECOS: TIntegerArray;
+
+function TPoint.equals(P: TPoint): Boolean;
+begin
+  result := ((self.X = P.X) and (self.Y = P.Y));
+end;
 
 function TPoint.inBox(B: TBox): Boolean;
 begin
@@ -18,7 +23,7 @@ end;
 
 function TPoint.getDistance(P: TPoint): Integer;
 begin
-  if (self.X < 128) or (self.Y < 128) or (self.X > 13056) or (self.Y > 13056) then
+  if (self.X < 0) or (self.Y < 0) or (self.X > 20000) or (self.Y > 20000) then
     exit(0);
 
   result := distance(self.X, self.Y, P.Y, P.Y);
@@ -31,7 +36,94 @@ end;
 
 function TBase.getDistance(P: TPoint): Integer;
 begin
-  self.tile.getDistance(P);
+  self.__tile.getDistance(P);
+end;
+
+function TBase.toRegion: TPoint;
+begin
+  result.X := round((self.__tile.X - (smartGetFieldInt(smartCurrentTarget, 0, client_baseX) * client_baseX_Multiplier) + 0.5) * 128);
+  result.Y := round((self.__tile.Y - (smartGetFieldInt(smartCurrentTarget, 0, client_baseY) * client_baseY_Multiplier) + 0.5) * 128);
+end;
+
+function TBase.getTileHeight: Integer;
+var
+  X, Y, currentPlane, groundSetting: integer;
+begin
+  X := self.__tile.Y - SmartGetFieldInt(SmartCurrentTarget, 0, client_baseX) * client_baseX_Multiplier;
+  X := self.__tile.Y - SmartGetFieldInt(SmartCurrentTarget, 0, client_baseY) * client_baseY_Multiplier;
+  if ((X < 0) or (X > REGION_WIDTH) or (Y < 0) or (Y > REGION_HEIGHT)) then
+  begin
+    exit(0);
+  end;
+  currentPlane := smartGetFieldInt(smartCurrentTarget, 0, client_plane) * client_plane_Multiplier;
+  groundSetting := smartGetFieldArray3DByte(smartCurrentTarget, 0, client_groundSettings, 1, X, Y);
+  if ((currentPlane < 3) and ((groundSetting and 2) <> 0)) then
+    inc(currentPlane);
+  result := smartGetFieldArray3DInt(smartCurrentTarget, 0, client_groundHeights, currentPlane, X, Y)
+  + smartGetFieldArray3DInt(smartCurrentTarget, 0, client_groundHeights, currentPlane, X + 1, Y)
+  + smartGetFieldArray3DInt(smartCurrentTarget, 0, client_groundHeights, currentPlane, X, Y + 1)
+  + smartGetFieldArray3DInt(smartCurrentTarget, 0, client_groundHeights, currentPlane, X + 1, Y + 1);
+  result := - result div 4;
+end;
+
+function ashr(x: Integer; d: Byte): Integer;
+var
+  Bit: Integer;
+  I: Integer;
+begin
+  Bit := (1 shl 31) and x;
+  Result := x;
+
+  for I := 1 to d do
+    Result := (Result shr 1) or Bit;
+end;
+
+function TBase.toScreen(X, Y, Z: Integer): TPoint;
+var
+  curveX, curveY, curveCosX, curveCosY, curveSinX, curveSinY, tempCalculation: Extended;
+  calculatedScreenPosX, calculatedScreenPosY: Integer;
+  cameraPosition: TPoint3D;
+begin
+  result := self.toRegion();
+  X := result.X + X;
+  Y := result.Y + Y;
+  Z := self.getTileHeight + Z;
+  if (X < 128) or (Y < 128) or (X > 13056) or (Y > 13056) then
+    exit(point(-1, -1));
+  Z := -Z;
+  cameraPosition := RSClient.getCameraPosition();
+  X := X - cameraPosition.X;
+  Y := Y - cameraPosition.Y;
+  Z := Z - cameraPosition.Z;
+  curveX := RSClient.getCameraYaw();
+  curveY := RSClient.getCameraPitch();
+  curveCosX := CURVECOS[floor(curveX)];
+  curveCosY := CURVECOS[floor(curveY)];
+  curveSinX := CURVESIN[floor(curveX)];
+  curveSinY := CURVESIN[floor(curveY)];
+  tempCalculation := ashr(round((curveCosX * X) + (Y * curveSinX)), 16);
+  Y := ashr(round((Y * curveCosX) - (X * curveSinX)), 16);
+  X := round(tempCalculation);
+  tempCalculation := ashr(round((Z * curveCosY) - (Y * curveSinY)), 16);
+  Y := ashr(round((Z * curveSinY) - ((-curveCosY) * Y)), 16);
+  Z := round(tempCalculation);
+  if (Y < 50) then
+  begin
+    exit(point(-1, -1));
+  end
+  else
+  begin
+    calculatedScreenPosX := round((((floor(X) shl 9) / Y)));
+    incEx(calculatedScreenPosX, 256);
+    calculatedScreenPosY := round((((floor(Z) shl 9) / Y)));
+    incEx(calculatedScreenPosY, 167);
+    result := point(calculatedScreenPosX, calculatedScreenPosY);
+  end;
+end;
+
+function TBase.toScreen: TPoint; overload;
+begin
+  result := self.toScreen(0, 0, 0);
 end;
 
 function Point3D(X, Y, Z: Integer): TPoint3D;
