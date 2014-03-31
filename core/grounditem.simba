@@ -10,10 +10,10 @@ procedure TGroundItem.create(id, quantity: Integer; tile: TPoint);
 begin
   self.id := id;
   self.quantity := quantity;
-  self.tile := tile;
+  self.__tile := __tile;
 end;
 
-function TGroundItem.getGroundItemsAt(Tile: TPoint): TGroundItemArray;
+function TGroundItem.getGroundItemsAt(tile: TPoint): TGroundItemArray;
 var
    baseX, baseY, plane, _head, _next, _node, _nodes, _id, _quantity: Integer;
 begin
