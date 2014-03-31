@@ -1,7 +1,7 @@
 type
   TPlayer = record(TBase)
-    Name, Pass, Pin: String;
-    Active: Boolean;
+    name, pass, pin: String;
+    active: Boolean;
   end;
 
 const
@@ -32,117 +32,134 @@ const
 
 procedure TPlayer.__destroy;
 begin
-  if (Self.__Object <> 0) then
-    SmartFreeObject(SmartCurrentTarget, Self.__Object);
+  if (self.__object <> 0) then
+    smartFreeObject(smartCurrentTarget, self.__object);
 end;
 
 procedure TPlayer.__update;
 begin
-  Self.__destroy;
-  Self.__Object := SmartGetFieldObject(SmartCurrentTarget, 0, client_player);
-end; 
+  self.__destroy;
+  self.__object := smartGetFieldObject(smartCurrentTarget, 0, client_player);
+end;
 
-function TPlayer.animation: Integer;
+function TPlayer.getTile: TPoint;
 begin
-  Self.__update;
-  Result := SmartGetFieldInt(SmartCurrentTarget, Self.__Object, Actor_animation)  * Actor_animation_Multiplier;
+  self.__update;
+  result.X := (smartGetFieldInt(smartCurrentTarget, 0, client_baseX) * client_baseX_Multiplier) + (smartGetFieldInt(smartCurrentTarget, Self.__Object, Actor_localX) * Actor_localX_Multiplier) div 128;
+  result.Y := (smartGetFieldInt(smartCurrentTarget, 0, client_baseY) * client_baseY_Multiplier) + (smartGetFieldInt(smartCurrentTarget, Self.__Object, Actor_localY) * Actor_localY_Multiplier) div 128;
+end;
+
+function TPlayer.getDistance(P: TPoint): Integer;
+begin
+  result := self.getTile().getDistance(P);
+end;
+
+function TPlayer.getDistance(I: TGroundItem): Integer; overload;
+begin
+  result := self.getTile().getDistance(I.Tile);
+end;
+
+function TPlayer.getAnimation: Integer;
+begin
+  self.__update;
+  result := smartGetFieldInt(smartCurrentTarget, self.__object, Actor_animation)  * Actor_animation_Multiplier;
 end;
 
 function TPlayer.isAnimating: Boolean;
 begin
-  Result := (Self.Animation > -1);
+  Result := (self.getAnimation() > -1);
 end;
 
-function TPlayer.waitAnimating(Time: Integer): Boolean;
+function TPlayer.waitAnimating(time: Integer): Boolean;
 var
-  Timer: Integer;
+  timer: Integer;
 begin
-  MarkTime(Timer);
-  while ((Self.animation = -1) and (TimeFromMark(Timer) < Time)) do
-    Sleep(100);
-  Result := (not (Self.animation = -1));
+  markTime(timer);
+  while ((self.getAnimation() = -1) and (timeFromMark(timer) < time)) do
+    sleep(100);
+  result := (not (self.getAnimation() = -1));
 end;
 
-function TPlayer.skillLevel(Skill: Integer): Integer;
+function TPlayer.getSkillLevel(skill: Integer): Integer;
 begin
-  Result := SmartGetFieldArrayInt(SmartCurrentTarget, 0, client_levels, Skill);
+  result := smartGetFieldArrayInt(smartCurrentTarget, 0, client_levels, skill);
 end;
 
-function TPlayer.maxSkillLevel(Skill: Integer): Integer;
+function TPlayer.getMaxSkillLevel(skill: Integer): Integer;
 begin
-  Result := SmartGetFieldArrayInt(SmartCurrentTarget, 0, client_real_levels, Skill);
+  result := smartGetFieldArrayInt(smartCurrentTarget, 0, client_real_levels, skill);
 end;
 
-function TPlayer.experience(Skill: Integer): Integer;
+function TPlayer.getExperience(skill: Integer): Integer;
 begin
-  Result := SmartGetFieldArrayInt(SmartCurrentTarget, 0, client_experiences, Skill);
+  result := smartGetFieldArrayInt(smartCurrentTarget, 0, client_experiences, skill);
 end;
 
-function TPlayer.health: Integer;
+function TPlayer.getHealth: Integer;
 begin
-  Self.skillLevel(SKILL_HITPOINTS);
+  self.getSkillLevel(SKILL_HITPOINTS);
 end;
 
-function TPlayer.maxHealth: Integer;
+function TPlayer.getMaxHealth: Integer;
 begin
-  Self.__update;
-  Result := SmartGetFieldInt(SmartCurrentTarget, Self.__Object, Actor_maxHealth) * Actor_maxHealth_Multiplier;
+  self.__update;
+  result := smartGetFieldInt(smartCurrentTarget, self.__object, Actor_maxHealth) * Actor_maxHealth_Multiplier;
 end;
 
-function TPlayer.healthPercent: Extended;
+function TPlayer.getHealthPercent: Extended;
 begin
-  if (Self.health = 0) then
-    Exit(0.0);
+  if (self.getHealth() = 0) then
+    exit(0.0);
 
-  Result := (Self.health / Self.maxHealth) * 100.0;
+  result := (self.getHealth() / self.getMaxHealth()) * 100.0;
 end;
 
-function TPlayer.runEnergy: Integer;
+function TPlayer.getRunEnergy: Integer;
 begin
-  Result := SmartGetFieldInt(SmartCurrentTarget, 0, client_run_energy) * client_run_energy_Multiplier;
+  result := smartGetFieldInt(smartCurrentTarget, 0, client_run_energy) * client_run_energy_Multiplier;
 end;
 
 function TPlayer.isAutoRetaliateOn: Boolean;
 begin
-  Result := (RSClient.getSetting(172) = 0);
+  result := (RSClient.getSetting(172) = 0);
 end;
 
 function TPlayer.isRunOn: Boolean;
 begin
-  Result := (RSClient.getSetting(173) = 1);
+  result := (RSClient.getSetting(173) = 1);
 end;
 
 function TPlayer.isPoisoned: Boolean;
 begin
-  Result := (RSClient.getSetting(102) > 0);
+  result := (RSClient.getSetting(102) > 0);
 end;
 
 function TPlayer.isAutoCastOn: Boolean;
 begin
-  Result := (RSClient.getSetting(108) > 0);
+  result := (RSClient.getSetting(108) > 0);
 end;
 
-function TPlayer.specialAttackPercent: Extended;
+function TPlayer.getSpecialAttackPercent: Extended;
 begin
-  Result := (RSClient.getSetting(300) / 10.0);
+  result := (RSClient.getSetting(300) / 10.0);
 end;
 
-function TPlayer.weight: Integer;
+function TPlayer.getWeight: Integer;
 begin
-  Result := SmartGetFieldInt(SmartCurrentTarget, 0, client_weight) * client_weight_Multiplier;
+  result := smartGetFieldInt(smartCurrentTarget, 0, client_weight) * client_weight_Multiplier;
 end;
 
-function TPlayer.loginState: Integer;
+function TPlayer.getLoginState: Integer;
 begin
-  Result := SmartGetFieldInt(SmartCurrentTarget, 0, client_login_state) * client_login_state_Multiplier;
+  result := smartGetFieldInt(smartCurrentTarget, 0, client_login_state) * client_login_state_Multiplier;
 end;
 
-function TPlayer.plane: Integer;
+function TPlayer.getPlane: Integer;
 begin
-  Result := SmartGetFieldInt(SmartCurrentTarget, 0, client_plane) * client_plane_Multiplier;
+  result := smartGetFieldInt(smartCurrentTarget, 0, client_plane) * client_plane_Multiplier;
 end;
 
 function TPlayer.inFight: Boolean;
 begin
-  Writeln('Warning: TPlayer.inFight has not been implemented yet.');
+  writeln('Warning: TPlayer.inFight has not been implemented yet.');
 end;
