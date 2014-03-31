@@ -1,0 +1,31 @@
+{$DEFINE REFLECTION}
+
+var
+  SMART_ForceNew: Boolean;
+  SMART_World: Integer;
+  SmartCurrentTarget: Integer;
+  SmartCurrentPID: Integer;
+
+{$I Reflection/Misc/SmartParams.simba}
+
+{$I Reflection/Core/Hooks.simba}
+{$I Reflection/Core/Globals.simba}
+{$I Reflection/Core/Client.simba}
+{$I Reflection/Core/Player.simba}
+{$I Reflection/Core/Model.simba}
+
+const
+  Revision = 1;
+
+procedure SetupReflection;
+var
+  T: Integer;
+begin
+  T := GetTimeRunning;
+
+  //Setup
+
+  Writeln('Reflection compiled in ' +  ToStr(GetTimeRunning - T) + ' msec');
+
+  InitSmart(SMART_ForceNew);
+end;
