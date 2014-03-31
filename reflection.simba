@@ -1,10 +1,10 @@
 {$DEFINE REFLECTION}
 
 var
-  SMART_ForceNew: Boolean;
-  SMART_World: Integer;
-  SmartCurrentTarget: Integer;
-  SmartCurrentPID: Integer;
+  smartForceNew: Boolean;
+  smartWorld: Integer;
+  smartCurrentTarget: Integer;
+  smartCurrentPID: Integer;
 
 {$I reflection/core/smart.simba}
 {$I reflection/core/hooks.simba}
@@ -28,5 +28,5 @@ begin
 
   writeln('Reflection compiled in ' +  toStr(getTimeRunning - T) + ' msec');
 
-  initSmart(smart_forceNew);
+  initSmart(smartForceNew);
 end;
