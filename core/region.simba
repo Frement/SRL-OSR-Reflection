@@ -7,3 +7,55 @@ const
 
 var
   region: TRegion;
+
+function TRegion.getAllGroundItems: TGroundItemArray;
+var
+   X, Y, baseX, baseY, plane, L, I, H: Integer;
+   tempArray: TGroundItemArray;
+begin
+  baseX := smartGetFieldInt(smartCurrentTarget, 0, client_baseX) * client_baseX_Multiplier;
+  baseY := smartGetFieldInt(smartCurrentTarget, 0, client_baseY) * client_baseY_Multiplier;
+  plane := smartGetFieldInt(smartCurrentTarget, 0, client_plane) * client_plane_Multiplier;
+  for X := 0 to REGION_WIDTH do begin
+    for Y := 0 to REGION_HEIGHT do begin
+      setLength(tempArray, 0);
+      tempArray := TGroundItem.getGroundItemsAt(point(baseX + X, baseY + Y));
+      L := length(tempArray);
+      if (L > 0) then begin
+        setLength(result, length(result) + L);
+        H := length(Result);
+        for I := 0 to high(tempArray) do begin
+          result[H - L + I] := tempArray[I];
+        end;
+      end;
+    end;
+  end;
+end;
+
+function TRegion.getGroundItemsDistance(distance: Integer): TGroundItemArray;
+var
+   X, Y, baseX, baseY, plane, L, I, H: Integer;
+   tempArray: TGroundItemArray;
+   position: TPoint;
+begin
+  baseX := SmartGetFieldInt(SmartCurrentTarget, 0, client_baseX) * client_baseX_Multiplier;
+  baseY := SmartGetFieldInt(SmartCurrentTarget, 0, client_baseY) * client_baseY_Multiplier;
+  plane := SmartGetFieldInt(SmartCurrentTarget, 0, client_plane) * client_plane_Multiplier;
+  position := Player.getTile();
+  position := point(position.X - baseX, position.Y - baseY);
+  distance := round(distance / 2);
+  for X := position.X - distance to position.X + distance do begin
+    for Y := position.Y - distance to position.Y + distance do begin
+      setLength(tempArray, 0);
+      tempArray := TGroundItem.getGroundItemsAt(point(baseX + X, baseY + Y));
+      L := length(tempArray);
+      if (L > 0) then begin
+        setLength(result, length(result) + L);
+        H := Length(result);
+        for I := 0 to high(tempArray) do begin
+          result[H - L + I] := tempArray[I];
+        end;
+      end;
+    end;
+  end;
+end;
