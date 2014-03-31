@@ -11,21 +11,23 @@ var
 {$I Reflection/Core/Hooks.simba}
 {$I Reflection/Core/Globals.simba}
 {$I Reflection/Core/Client.simba}
+{$I Reflection/Core/GroundItem.simba}
 {$I Reflection/Core/Player.simba}
 {$I Reflection/Core/Model.simba}
+{$I Reflection/Core/Region.simba}
 
 const
-  Revision = 1;
+  revision = 1;
 
-procedure SetupReflection;
+procedure setupReflection;
 var
   T: Integer;
 begin
-  T := GetTimeRunning;
+  T := getTimeRunning;
 
-  //Setup
+  RSClient.setupCurves;
 
-  Writeln('Reflection compiled in ' +  ToStr(GetTimeRunning - T) + ' msec');
+  writeln('Reflection compiled in ' +  toStr(getTimeRunning - T) + ' msec');
 
-  InitSmart(SMART_ForceNew);
+  initSmart(smart_forceNew);
 end;
