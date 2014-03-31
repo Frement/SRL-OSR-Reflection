@@ -5,7 +5,7 @@ type
 
   TBase = record
     __object: Integer;
-    tile: TPoint;
+    __tile: TPoint;
   end;
 
 var
@@ -26,7 +26,7 @@ end;
 
 function TBase.getTile: TPoint;
 begin
-  result := self.tile;
+  result := self.__tile;
 end;
 
 function TBase.getDistance(P: TPoint): Integer;
