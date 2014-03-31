@@ -11,8 +11,8 @@ var
 
 {$I reflection/core/smart.simba}
 {$I reflection/core/hooks.simba}
-{$I reflection/core/globals.simba}
 {$I reflection/core/client.simba}
+{$I reflection/core/globals.simba}
 {$I reflection/core/grounditem.simba}
 {$I reflection/core/player.simba}
 {$I reflection/core/model.simba}
@@ -25,10 +25,22 @@ var
 var
   T: Integer;
 
+procedure setupCurves;
+var
+  I: Integer;
+begin
+  setLength(CURVESIN, 2048);
+  setLength(CURVECOS, 2048);
+  for I := 0 to 2047 do begin
+    CURVESIN[I] := round(65536.0 * sin(I * 0.0030679614999999999));
+    CURVECOS[I] := round(65536.0 * cos(I * 0.0030679614999999999));
+  end;
+end;
+
 begin
   T := getTimeRunning;
 
-  RSClient.setupCurves;
+  setupCurves;
 
   writeln('Reflection compiled in ' +  toStr(getTimeRunning - T) + ' msec');
 
