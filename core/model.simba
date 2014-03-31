@@ -1,0 +1,10 @@
+type
+  TRenderable = TBase;
+
+  TModel = TRenderable;
+
+function TRenderable.getModelHeight(): Integer;
+begin
+  Result := SmartGetFieldInt(SmartCurrentTarget, Self.__Object, Renderable_height) * Renderable_height_Multiplier;
+end;
+
