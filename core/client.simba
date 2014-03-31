@@ -1,0 +1,35 @@
+type
+  TRSClient = type Pointer;
+
+var
+  RSClient: TRSClient;
+
+const
+  __SETTING_COUNT = 2000;
+
+function TRSCLient.getString(Address: Integer): String;
+begin
+  SetLength(Result, SmartStringFromString(SmartCurrentTarget, Address, Result));
+  Result := Replace(Result, 'Â', '', [rfReplaceAll]);
+  Result := Replace(Result, #160, #32, [rfReplaceAll]);
+end;
+
+function TRSClient.getSettingsArray: TIntegerArray;
+var
+  I: Integer;
+begin
+  SetLength(Result, __SETTING_COUNT);
+  for I := 0 to __SETTING_COUNT - 1 do
+    Result[I] := SmartGetFieldArrayInt(SmartCurrentTarget, 0, client_settings, I);
+end;
+
+function TRSClient.getSetting(Index: Integer): Integer;
+var
+  Settings: TIntegerArray;
+begin
+  if ((Index >= __SETTING_COUNT) or (Index < 0)) then
+    Exit(-1);
+  Settings := Self.getSettingsArray;
+  Result := Settings[Index];
+end;
+
