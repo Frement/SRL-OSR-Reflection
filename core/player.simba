@@ -42,6 +42,16 @@ begin
   self.__object := smartGetFieldObject(smartCurrentTarget, 0, client_player);
 end;
 
+function TPlayer.getName: String;
+var
+  _playerName: Integer;
+begin
+  self.__update;
+  _playerName := smartGetFieldObject(smartCurrentTarget, self.__object, Player_name);
+  Result := RSClient.getString(_playerName);
+  smartFreeObject(smartCurrentTarget, _playerName);
+end;
+
 function TPlayer.getTile: TPoint; override;
 begin
   self.__update;
