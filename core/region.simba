@@ -1,10 +1,6 @@
 type
   TRegion = type Pointer;
 
-const
-  REGION_WIDTH = 104;
-  REGION_HEIGHT = REGION_WIDTH;
-
 var
   region: TRegion;
 
