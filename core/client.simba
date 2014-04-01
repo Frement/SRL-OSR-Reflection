@@ -13,7 +13,9 @@ const
 
 function TRSCLient.getString(address: Integer): String;
 begin
-  SetLength(result, smartStringFromString(smartCurrentTarget, address, result));
+  setLength(result, 1024);
+  setLength(result, smartStringFromString(smartCurrentTarget, address, result));
+  writeln(length(result));
   result := replace(result, 'Â', '', [rfReplaceAll]);
   result := replace(result, #160, #32, [rfReplaceAll]);
 end;
@@ -52,4 +54,14 @@ begin
   result.X := smartGetFieldInt(smartCurrentTarget, 0, client_cameraX) * client_cameraX_Multiplier;
   result.Y := smartGetFieldInt(smartCurrentTarget, 0, client_cameraY) * client_cameraY_Multiplier;
   result.Z := smartGetFieldInt(smartCurrentTarget, 0, client_cameraZ) * client_cameraZ_Multiplier;
+end;
+
+function TRSClient.getUpText: String;
+begin
+  writeln('Warning: TRSClient.getUpText has not been implemented yet.');
+end;
+
+function TRSClient.isUpText(text: String): Boolean;
+begin
+  writeln('Warning: TRSClient.isUpText(text: String) has not been implemented yet.');
 end;
