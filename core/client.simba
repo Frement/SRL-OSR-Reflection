@@ -15,7 +15,6 @@ function TRSCLient.getString(address: Integer): String;
 begin
   setLength(result, 1024);
   setLength(result, smartStringFromString(smartCurrentTarget, address, result));
-  writeln(length(result));
   result := replace(result, 'Â', '', [rfReplaceAll]);
   result := replace(result, #160, #32, [rfReplaceAll]);
 end;
