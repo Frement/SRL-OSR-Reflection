@@ -1,0 +1,102 @@
+var
+  mouseSpeed: Integer;
+
+const
+  mouseRight = 0;
+  mouseLeft = 1;
+  mouseMiddle = 2;
+  mouseMove = 3;
+
+procedure windMouse(xs, ys, xe, ye, gravity, wind, minWait, maxWait, maxStep, targetArea: extended);
+var
+  veloX, veloY, windX, windY, veloMag, dist, randomDist, lastDist, step: extended;
+  lastX, lastY: integer;
+  sqrt2, sqrt3, sqrt5: extended;
+begin
+  try
+    sqrt2:= sqrt(2);
+    sqrt3:= sqrt(3);
+    sqrt5:= sqrt(5);
+    while hypot(xs - xe, ys - ye) > 1 do
+    begin
+      dist:= hypot(xs - xe, ys - ye);
+      wind:= minE(wind, dist);
+      if dist >= targetArea then
+      begin
+        windX:= windX / sqrt3 + (random(round(wind) * 2 + 1) - wind) / sqrt5;
+        windY:= windY / sqrt3 + (random(round(wind) * 2 + 1) - wind) / sqrt5;
+      end else
+      begin
+        windX:= windX / sqrt2;
+        windY:= windY / sqrt2;
+        if (maxStep < 3) then
+        begin
+          maxStep:= random(3) + 3.0;
+        end else
+        begin
+          maxStep:= maxStep / sqrt5;
+        end;
+      end;
+      veloX:= veloX + windX;
+      veloY:= veloY + windY;
+      veloX:= veloX + gravity * (xe - xs) / dist;
+      veloY:= veloY + gravity * (ye - ys) / dist;
+      if hypot(veloX, veloY) > maxStep then
+      begin
+        randomDist:= maxStep / 2.0 + random(round(maxStep) div 2);
+        veloMag:= sqrt(veloX * veloX + veloY * veloY);
+        veloX:= (veloX / veloMag) * randomDist;
+        veloY:= (veloY / veloMag) * randomDist;
+      end;
+      lastX:= Round(xs);
+      lastY:= Round(ys);
+      xs:= xs + veloX;
+      ys:= ys + veloY;
+      if (lastX <> Round(xs)) or (lastY <> Round(ys)) then
+        MoveMouse(Round(xs), Round(ys));
+      step:= hypot(xs - lastX, ys - lastY);
+      wait(round((maxWait - minWait) * (step / maxStep) + minWait));
+      lastdist:= dist;
+    end;
+    if (Round(xe) <> Round(xs)) or (Round(ye) <> Round(ys)) then
+      MoveMouse(Round(xe), Round(ye));
+  except
+  end;
+end;
+
+procedure mouse(X, Y, rX, rY, button: Integer);
+var
+  B, C: Integer;
+  halfRx: Integer := rX div 2;
+  halfRy: Integer := rY div 2;
+  randSpeed: Extended;
+begin
+  getMousePos(B, C);
+  randSpeed := (random(mouseSpeed) / 2.0 + mouseSpeed) / 10.0;
+  if randSpeed = 0.0 then
+    randSpeed := 0.1;
+  X := X + randomRange(-halfRx, halfRx);
+  Y := Y + randomRange(-halfRy, halfRy);
+  windMouse(B, C, X,Y , 9.0, 3.0, 10.0 / randSpeed, 15.0 / randSpeed, 10.0 * randSpeed, 10.0 * randSpeed);
+  if (button <> mouseMove) then begin
+    getMousePos(B, C);
+    holdMouse(B, C, button);
+    sleep(100 + random(150));
+    getMousePos(B, C);
+    releaseMouse(B, C, button);
+    sleep(50 + random(50));
+  end;
+end;
+
+procedure mouse(X, Y, rX, rY: Integer); overload;
+begin
+  mouse(X, Y, rX, rY, mouseMove);
+end;
+
+procedure mouse(button: Integer); overload;
+var
+  B, C: Integer;
+begin
+  getMousePos(B, C);
+  mouse(B, C, 0, 0, button);
+end;
