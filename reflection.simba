@@ -10,12 +10,13 @@ var
   smartCurrentPID: Integer;
 
 {$I reflection/core/smart.simba}
+{$I reflection/core/mouse.simba}
 {$I reflection/core/hooks.simba}
 {$I reflection/core/client.simba}
 {$I reflection/core/globals.simba}
+{$I reflection/core/model.simba}
 {$I reflection/core/grounditem.simba}
 {$I reflection/core/player.simba}
-{$I reflection/core/model.simba}
 
 var
   player: TPlayer;
