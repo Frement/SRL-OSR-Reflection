@@ -156,12 +156,37 @@ begin
   result := replace(result, '  ', ' ', [rfReplaceAll]);
 end;
 
-procedure MarkTime(var timer: Integer);
+function TBase.click(option: String; X, Y, Z: Integer): Boolean;
+var
+  P: TPoint;
+begin
+  P := self.toScreen(X, Y, Z);
+  mouse(P.X, P.Y, 2, 2);
+  sleep(25 + random(25));
+  if (option <> '') then begin
+    if ((RSClient.getUpText() = 'Walk here') and (option <> 'Walk here')) then
+      exit(false);
+    if (RSClient.isUpText(option)) then
+      mouse(mouseLeft)
+    else begin
+      mouse(mouseRight);
+      sleep(25 + random(25));
+    end;
+  end else
+    mouse(mouseLeft);
+end;
+
+function TBase.click(option: String): Boolean; overload;
+begin
+  result := self.click(option, 0, 0, 0);
+end;
+
+procedure markTime(var timer: Integer);
 begin
   timer := getSystemTime;
 end;
 
-function TimeFromMark(timer: Integer): Integer;
+function timeFromMark(timer: Integer): Integer;
 begin
   result := (getSystemTime - timer);
 end;
