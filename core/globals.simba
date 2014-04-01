@@ -78,7 +78,7 @@ begin
     Result := (Result shr 1) or Bit;
 end;
 
-function TBase.toScreen(X, Y, Z: Integer): TPoint;
+function TBase.toScreen(X, Y, Z: Integer = 0): TPoint;
 var
   curveX, curveY, curveCosX, curveCosY, curveSinX, curveSinY, tempCalculation: Extended;
   calculatedScreenPosX, calculatedScreenPosY: Integer;
@@ -121,11 +121,6 @@ begin
   end;
 end;
 
-function TBase.toScreen: TPoint; overload;
-begin
-  result := self.toScreen(0, 0, 0);
-end;
-
 function Point3D(X, Y, Z: Integer): TPoint3D;
 begin
   result.X := X;
@@ -156,11 +151,10 @@ begin
   result := replace(result, '  ', ' ', [rfReplaceAll]);
 end;
 
-function TBase.click(option: String; X, Y, Z: Integer): Boolean;
+function TBase.click(option: String = ''; X, Y, Z: Integer = 0): Boolean;
 var
-  P: TPoint;
+  P: TPoint := self.toScreen(X, Y, Z);
 begin
-  P := self.toScreen(X, Y, Z);
   mouse(P.X, P.Y, 2, 2);
   sleep(25 + random(25));
   if (option <> '') then begin
@@ -174,11 +168,6 @@ begin
     end;
   end else
     mouse(mouseLeft);
-end;
-
-function TBase.click(option: String): Boolean; overload;
-begin
-  result := self.click(option, 0, 0, 0);
 end;
 
 procedure markTime(var timer: Integer);
