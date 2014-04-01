@@ -1,16 +1,30 @@
 type
-  TGroundItem = record(TBase)
+  TGroundItem = record(TModel)
     id, quantity: Integer;
   end;
 
   TGroundItemArray = array of TGroundItem;
 
 
-procedure TGroundItem.create(id, quantity: Integer; tile: TPoint);
+procedure TGroundItem.create(__object, id, quantity: Integer; tile: TPoint);
 begin
   self.id := id;
   self.quantity := quantity;
   self.__tile := __tile;
+  self.__object := __object;
+end;
+
+procedure TGroundItem.destroy;
+begin
+  smartFreeObject(smartCurrentTarget, self.__object);
+end;
+
+procedure TGroundItemArray.destroy;
+var
+  I: Integer;
+begin
+  for I := 0 to high(self) do
+    self[I].destroy;
 end;
 
 function TGroundItem.getGroundItemsAt(tile: TPoint): TGroundItemArray;
@@ -30,7 +44,7 @@ begin
     if (_id = -1) or (_quantity = -1) then
       break;
     setLength(result, length(result) + 1);
-    result[High(Result)].create(_id * Item_id_Multiplier, _quantity * Item_stackSize_Multiplier, tile);
+    result[High(Result)].create(_next, _id * Item_id_Multiplier, _quantity * Item_stackSize_Multiplier, tile);
     _next := SmartGetFieldObject(smartCurrentTarget, _next, Node_next);
     smartFreeObject(smartCurrentTarget, _node);
   end;
