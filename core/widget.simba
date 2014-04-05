@@ -1,0 +1,133 @@
+type
+  PWidget = ^TWidget;
+
+  PWidgetArray = array of PWidget;
+
+  TWidget = record
+    __object: Integer;
+    __parent: PWidget;
+    __childs: PWidgetArray;
+  end;
+
+function TWidget.get(parentIndex, childIndex: Integer): TWidget;
+var
+  P: ^Byte;
+Begin
+  result.__object := smartGetFieldArray2DObject(smartCurrentTarget, 0, client_widgets, parentIndex, childIndex);
+  If (childIndex <> 0) Then
+  begin
+    P := @heapAlloc(sizeOf(self), 2)[0];
+    PWidget(P)^ := TWidget.get(parentIndex, 0);
+    result.__parent := PWidget(P);
+  end;
+End;
+
+procedure TWidget.destroy;
+var
+  I: Integer;
+begin
+  if (self.__object > 0) then
+    smartFreeObject(smartCurrentTarget, self.__object);
+  if (self.hasParent()) then
+    self.__parent^.destroy;
+  for I := 0 to High(self.__childs) do
+  begin
+    self.__childs[I]^.destroy;
+  end;
+end;
+
+function TWidget.isValid: Boolean;
+begin
+  result := self.__object > 0;
+end;
+
+function TWidget.hasParent: Boolean;
+begin
+  result := self.__parent <> nil;
+end;
+
+function TWidget.getParent: Integer;
+begin
+  result := smartGetFieldObject(smartCurrentTarget, self.__object, Widget_getParent);
+end;
+
+function TWidget.getText: String;
+var
+  text: Integer;
+begin
+  if (not self.isValid()) then
+    exit('');
+  text := smartGetFieldObject(smartCurrentTarget, self.__object, Widget_getText);
+  result := RSClient.getString(text);
+  smartFreeObject(smartCurrentTarget, text);
+end;
+
+function TWidget.getWidth: Integer;
+begin
+  if (not self.isValid()) then
+    exit(0);
+  result := smartGetFieldInt(smartCurrentTarget, self.__object, Widget_width) * Widget_width_Multiplier;
+end;
+
+function TWidget.getHeight: Integer;
+begin
+  if (not self.isValid()) then
+    exit(0);
+  result := smartGetFieldInt(smartCurrentTarget, self.__object, Widget_height) * Widget_height_Multiplier;
+end;
+
+function TWidget.__getX: Integer;
+begin
+  if (not self.isValid()) then
+    exit(0);
+  result := smartGetFieldInt(smartCurrentTarget, self.__object, Widget_getX) * Widget_getX_Multiplier;
+end;
+
+function TWidget.__getY: Integer;
+begin
+  if (not self.isValid()) then
+    exit(0);
+  result := smartGetFieldInt(smartCurrentTarget, self.__object, Widget_getY) * Widget_getY_Multiplier;
+end;
+
+function TWidget.__getX(parent: Integer): Integer; overload;
+begin
+  if (not self.isValid()) then
+    exit(0);
+  if (parent = 0) then
+    exit(0);
+  result := smartGetFieldInt(smartCurrentTarget, parent, Widget_getX) * Widget_getX_Multiplier;
+end;
+
+function TWidget.__getY(parent: Integer): Integer; overload;
+begin
+  if (not self.isValid()) then
+    exit(0);
+  if (parent = 0) then
+    exit(0);
+  result := smartGetFieldInt(smartCurrentTarget, parent, Widget_getY) * Widget_getY_Multiplier;
+end;
+
+function TWidget.__getRelativeX: Integer;
+begin
+  if (not self.isValid()) then
+    exit(0);
+  result := smartGetFieldInt(smartCurrentTarget, self.__object, Widget_getRelativeX) * Widget_getRelativeX_Multiplier;
+end;
+
+function TWidget.__getRelativeY: Integer;
+begin
+  if (not self.isValid()) then
+    exit(0);
+  result := smartGetFieldInt(smartCurrentTarget, self.__object, Widget_getRelativeY) * Widget_getRelativeY_Multiplier;
+end;
+
+function TWidget.getPosition: TPoint;
+begin
+  if (not self.isValid()) then
+    exit;
+  if (self.hasParent()) then
+    result := point(self.__getX() + self.__parent^.__getX(), self.__getY() + self.__parent^.__getY())
+  else
+    result := point(self.__getX(), self.__getY());
+end;
