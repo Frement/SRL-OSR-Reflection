@@ -4,12 +4,31 @@ type
     __tile: TPoint;
   end;
 
+  PUInt32 = ^UInt32; //Hack for allocating memory on the heap.
+  P = array of Byte; //By Brandon
+
 const
   REGION_WIDTH = 104;
   REGION_HEIGHT = REGION_WIDTH;
 
 var
   CURVESIN, CURVECOS: TIntegerArray;
+
+function heapAlloc(size, referenceCount: UInt32): array Of Byte; //Hack for allocating memory on the heap. (By Brandon)
+type
+  PUInt32 = ^UInt32;
+begin
+  setLength(result, size);
+  (PUInt32(@result[0]) - (sizeOf(UInt32) * 2))^ := referenceCount;
+end;
+
+procedure heapFree(arr: array Of Byte); //Hack for allocating memory on the heap. (By Brandon)
+type
+  PUInt32 = ^UInt32;
+begin
+  setLength(arr, 0);
+  (PUInt32(@arr[0]) - (sizeOf(UInt32) * 2))^ := 0;
+end;
 
 function TPoint.equals(P: TPoint): Boolean;
 begin
