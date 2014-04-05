@@ -15,8 +15,10 @@ var
 {$I reflection/core/client.simba}
 {$I reflection/core/globals.simba}
 {$I reflection/core/model.simba}
+{$I reflection/core/item.simba}
 {$I reflection/core/grounditem.simba}
 {$I reflection/core/player.simba}
+{$I reflection/core/widget.simba}
 
 var
   player: TPlayer;
