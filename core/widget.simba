@@ -7,13 +7,35 @@ type
     __object: Integer;
     __parent: PWidget;
     __childs: PWidgetArray;
+    boundsIndex: Integer;
   end;
+
+var
+  widgetBounds: TPointArray;
+
+procedure TWidget.updateBounds;
+var
+  I, J, X, Y: Integer;
+begin
+  for I := 0 to 2000 do
+  begin
+    X := smartGetFieldArrayInt(smartCurrentTarget, 0, client_widgetBoundsX, I);
+    Y := smartGetFieldArrayInt(smartCurrentTarget, 0, client_widgetBoundsY, I);
+    if (X > 0) or (Y > 0) then
+    begin
+      inc(J);
+      setLength(widgetBounds, J);
+      widgetBounds[J - 1] := point(X, Y);
+    end;
+  end;
+end;
 
 function TWidget.get(parentIndex, childIndex: Integer): TWidget;
 var
   P: ^Byte;
 Begin
   result.__object := smartGetFieldArray2DObject(smartCurrentTarget, 0, client_widgets, parentIndex, childIndex);
+  result.boundsIndex := smartGetFieldInt(smartCurrentTarget, result.__object, 'df') * 514493519;
   If (childIndex <> 0) Then
   begin
     P := @heapAlloc(sizeOf(self), 2)[0];
@@ -44,11 +66,6 @@ end;
 function TWidget.hasParent: Boolean;
 begin
   result := self.__parent <> nil;
-end;
-
-function TWidget.getParent: Integer;
-begin
-  result := smartGetFieldObject(smartCurrentTarget, self.__object, Widget_getParent);
 end;
 
 function TWidget.getText: String;
@@ -90,24 +107,6 @@ begin
   result := smartGetFieldInt(smartCurrentTarget, self.__object, Widget_getY) * Widget_getY_Multiplier;
 end;
 
-function TWidget.__getX(parent: Integer): Integer; overload;
-begin
-  if (not self.isValid()) then
-    exit(0);
-  if (parent = 0) then
-    exit(0);
-  result := smartGetFieldInt(smartCurrentTarget, parent, Widget_getX) * Widget_getX_Multiplier;
-end;
-
-function TWidget.__getY(parent: Integer): Integer; overload;
-begin
-  if (not self.isValid()) then
-    exit(0);
-  if (parent = 0) then
-    exit(0);
-  result := smartGetFieldInt(smartCurrentTarget, parent, Widget_getY) * Widget_getY_Multiplier;
-end;
-
 function TWidget.__getRelativeX: Integer;
 begin
   if (not self.isValid()) then
@@ -123,11 +122,20 @@ begin
 end;
 
 function TWidget.getPosition: TPoint;
+var
+  bounds: TPoint;
 begin
   if (not self.isValid()) then
     exit;
-  if (self.hasParent()) then
-    result := point(self.__getX() + self.__parent^.__getX(), self.__getY() + self.__parent^.__getY())
-  else
-    result := point(self.__getX(), self.__getY());
+  self.updateBounds;
+  //if (self.hasParent()) then
+  //  result := point(self.__getX() + self.__parent^.__getX(), self.__getY() + self.__parent^.__getY())
+  //else
+  //  result := point(self.__getX(), self.__getY());
+  //result := point(self.__parent^.__getX(), self.__parent^.__getY());
+  writeln(point(self.__getX(), self.__getY()));
+  writeln(point(self.__parent^.__getX(), self.__parent^.__getY()));
+  writeln(point(self.__getRelativeX(), self.__getRelativeY()));
+  bounds := widgetBounds[self.boundsIndex - 1];
+  result := point(result.X + bounds.X, result.Y + bounds.Y);
 end;
