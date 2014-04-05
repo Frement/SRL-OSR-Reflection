@@ -284,6 +284,8 @@ const
     client_menuY                                      =   'bu.hz';
     client_LoopCycle                                  =   'client.a';
     client_login_state                                =   'client.z';
+    client_widgetBoundsX = 'client.ld';
+    client_widgetBoundsY = 'client.lf';
 
 {*Client Multipliers*}
     client_menuCount_Multiplier                       =   1901194293;
