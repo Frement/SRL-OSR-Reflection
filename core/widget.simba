@@ -128,14 +128,10 @@ begin
   if (not self.isValid()) then
     exit;
   self.updateBounds;
-  //if (self.hasParent()) then
-  //  result := point(self.__getX() + self.__parent^.__getX(), self.__getY() + self.__parent^.__getY())
-  //else
-  //  result := point(self.__getX(), self.__getY());
-  //result := point(self.__parent^.__getX(), self.__parent^.__getY());
-  writeln(point(self.__getX(), self.__getY()));
-  writeln(point(self.__parent^.__getX(), self.__parent^.__getY()));
-  writeln(point(self.__getRelativeX(), self.__getRelativeY()));
+  if (self.hasParent()) then
+    result := point(self.__getX() + self.__parent^.__getX(), self.__getY() + self.__parent^.__getY())
+  else
+    result := point(self.__getX(), self.__getY());
   bounds := widgetBounds[self.boundsIndex - 1];
   result := point(result.X + bounds.X, result.Y + bounds.Y);
 end;
