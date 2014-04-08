@@ -1,0 +1,26 @@
+type
+  TItem = record(TModel)
+    id, quantity: Integer;
+  end;
+
+  TItemArray = array of TItem;
+
+procedure TItem.create(__object, id, quantity: Integer);
+begin
+  self.id := id;
+  self.quantity := quantity;
+  self.__object := __object;
+end;
+
+procedure TItem.destroy;
+begin
+  smartFreeObject(smartCurrentTarget, self.__object);
+end;
+
+procedure TItemArray.destroy;
+var
+  I: Integer;
+begin
+  for I := 0 to high(self) do
+    self[I].destroy;
+end;
