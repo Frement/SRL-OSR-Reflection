@@ -1,0 +1,36 @@
+type
+  TMemoryManager = record
+    __managed: Boolean;
+    __timeToLive: Integer;
+  end;
+
+  TManagedObject = record
+    __object, __time: Integer;
+  end;
+
+  TManagedObjectArray = array of TManagedObject;
+
+procedure TMemoryManager.setUnmanaged();
+begin
+  self.__managed := false;
+end;
+
+procedure TMemoryManager.setManaged();
+begin
+  self.__managed := true;
+end;
+
+procedure TMemoryManager.setTimeToLive(time: Integer);
+begin
+  self.__timeToLive := time;
+end;
+
+function TManagedObject.expired(): Boolean;
+begin
+  result := ((getSystemTime() - self.__time) > (60000 * self.__timeToLive));
+end;
+
+begin
+  TMemoryManager.setManaged();
+  TMemoryManager.setTimeToLive(30);
+end;
