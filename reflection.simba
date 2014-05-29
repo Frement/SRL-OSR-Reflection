@@ -10,6 +10,7 @@ var
   smartCurrentPID: Integer;
 
 {$I reflection/core/smart.simba}
+{$I reflection/core/memory.simba}
 {$I reflection/core/mouse.simba}
 {$I reflection/core/hooks.simba}
 {$I reflection/core/client.simba}
