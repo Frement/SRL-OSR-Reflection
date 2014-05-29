@@ -10,6 +10,9 @@ type
 
   TManagedObjectArray = array of TManagedObject;
 
+var
+  __memoryManager: TMemoryManager;
+
 procedure TMemoryManager.setUnmanaged();
 begin
   self.__managed := false;
@@ -27,10 +30,10 @@ end;
 
 function TManagedObject.expired(): Boolean;
 begin
-  result := ((getSystemTime() - self.__time) > (60000 * self.__timeToLive));
+  result := ((getSystemTime() - self.__time) > (60000 * __memoryManager.__timeToLive));
 end;
 
 begin
-  TMemoryManager.setManaged();
-  TMemoryManager.setTimeToLive(30);
+  __memoryManager.setManaged();
+  __memoryManager.setTimeToLive(30);
 end;
